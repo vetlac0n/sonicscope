@@ -3,8 +3,9 @@
   "version": "0.0.0",
   "private": true,
   "scripts": {
-    "dev": "vite",
+    "dev": "concurrently -k -n VITE,BACKEND -c green,blue \"vite\" \"nodemon backend/server.js\"",
     "build": "vite build",
+    "start": "vite preview",
     "preview": "vite preview"
   },
   "dependencies": {
@@ -16,6 +17,8 @@
   },
   "devDependencies": {
     "@vitejs/plugin-react": "^4.0.0",
+    "concurrently": "^9.1.2",
+    "nodemon": "^3.1.9",
     "vite": "^4.5.13"
   }
 }

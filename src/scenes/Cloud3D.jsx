@@ -1,54 +1,56 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Canvas } from '@react-three/fiber';
-import { OrbitControls } from '@react-three/drei';
+import { OrbitControls, Html } from '@react-three/drei';
 
-const dummySongs = [
-  {
-    id: 1,
-    name: 'Song A',
-    artist: 'Artist 1',
-    position: [20, 50, 30],
-    color: '#ff6666',
-  },
-  {
-    id: 2,
-    name: 'Song B',
-    artist: 'Artist 2',
-    position: [70, 90, 10],
-    color: '#66ccff',
-  },
-  {
-    id: 3,
-    name: 'Song C',
-    artist: 'Artist 3',
-    position: [10, 10, 90],
-    color: '#88ff88',
-  },
-];
-
-function SongPoint({ position, color }) {
+function SongPoint({ song, isHovered, onHover, onLeave }) {
   return (
-    <mesh position={position}>
+    <mesh
+      position={song.position}
+      onPointerOver={() => onHover(song)}
+      onPointerOut={onLeave}
+    >
       <sphereGeometry args={[2, 16, 16]} />
-      <meshStandardMaterial color={color} />
+      <meshStandardMaterial color={song.color} />
+
+      {isHovered && (
+        <Html distanceFactor={10}>
+          <div className="tooltip">
+            <strong>{song.name}</strong><br />
+            {song.artist}<br />
+            <a
+              href={`https://open.spotify.com/track/${song.trackId}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              style={{ color: '#1DB954' }}
+            >
+              🎧 Spotify
+            </a>
+          </div>
+        </Html>
+      )}
     </mesh>
   );
 }
 
 export default function Cloud3D({ songs = [] }) {
+  const [hoveredSong, setHoveredSong] = useState(null);
+
   return (
     <div style={{ height: '500px', width: '100%', background: '#eeeeee' }}>
       <Canvas camera={{ position: [60, 60, 60] }}>
         <ambientLight intensity={1} />
         <directionalLight position={[50, 50, 50]} intensity={1.5} />
         <OrbitControls />
+
         {songs.map((song) => (
-  <SongPoint
-    key={song.id}
-    position={song.position}
-    color={song.color}
-  />
-))}
+          <SongPoint
+            key={song.id}
+            song={song}
+            isHovered={hoveredSong?.id === song.id}
+            onHover={setHoveredSong}
+            onLeave={() => setHoveredSong(null)}
+          />
+        ))}
       </Canvas>
     </div>
   );
